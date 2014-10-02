@@ -42,6 +42,7 @@ class data {
         return mul;
     }
     
+    // Вычисляет значение функции по точкам
     double P(double t)
     {
         int i;
@@ -63,6 +64,7 @@ class data {
         return res;
     }
     
+    // Вычисляет значение первой производной функции по точкам
     double P1(double t)
     {
         int i, k;
@@ -93,6 +95,7 @@ class data {
         return res;
     }
     
+    // Вычисляет значение второй производной функции по точкам
     double P2(double t)
     {
         int i, k, p;
@@ -132,6 +135,7 @@ class data {
         return res;
     }
     
+    // Вычисляет значение третьей производной функции по точкам
     double P3(double t)
     {
         int i, k, p, l;
@@ -180,6 +184,7 @@ class data {
         return res;
     }
     
+    // Вычисляет значение четвертой производной функции по точкам
     double P4(double t)
     {
         int i, k, p, l, m;
@@ -243,6 +248,7 @@ public:
         freq = 1/samplingFrequency;
     }
 
+    //Добавляем новый элемент в массив данных
     void add(double v)
     {
         if (size < M){
@@ -259,6 +265,7 @@ public:
         }
     }
 
+    //Вычисляем амплитуду
     double computedMag()
     {
         if (size < M)
@@ -269,6 +276,7 @@ public:
         return sqrt((pow(2*M_PI*f*P3(t), 2) + pow(P4(t), 2))/pow(2*M_PI*f, 8));
     }
 
+    //Вычисляем частоту
     double computedFreq()
     {
         if (size < M)
@@ -278,6 +286,7 @@ public:
         return 1/2.0/M_PI*sqrt(-P2(t)/P(t));
     }
 
+    //Вычисляем фазу
     double computedAng()
     {
         if (size < M)
