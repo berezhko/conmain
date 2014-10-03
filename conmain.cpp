@@ -321,5 +321,5 @@ int main(int argc, char **argv) {
             printf("samp %f, mag %f, ang %f, freq %f\n", samp, computedMag, computedAng, computedFreq);
         }
         c++;
-    } while (c < 30);
+    } while (c < 10);
 }
