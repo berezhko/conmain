@@ -77,7 +77,7 @@ public:
         int i;
 
         freq = 1/samplingFrequency;
-        alfa = (double *) malloc(M*sizeof(double));
+        alfa = (double *) calloc(M, sizeof(double));
         size = 0;
         for (i = 0; i < M; i++){
             ti[i] = 0;

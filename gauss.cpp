@@ -6,7 +6,7 @@ double * gauss(int M, double *t, double *f)
     int size, i, j, v, k, d, p, J;
     double max, ma[M][M+1], rotate[M+1], *X;
 
-    X = (double *) malloc(M*sizeof(double));
+    X = (double *) calloc(M, sizeof(double));
 
     for (i = 0; i < M; i++){
         for (j = 0; j < M; j++){
