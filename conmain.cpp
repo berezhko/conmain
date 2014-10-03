@@ -3,8 +3,9 @@
 #define M 11
 
 #ifndef DEBUG
-#define DEBUG 0
+    #define DEBUG 0
 #endif
+
 
 class model {
     double mag;
@@ -17,16 +18,17 @@ public:
         step(2.0 * M_PI * modelledFrequency / samplingFrequency)
     {}
     double next() {
-        return mag*sin(ang += step);
+        ang += step;
+        return mag*sin(ang);
     }
 };
 
 
 class data {
+    int size;
     double ti[M];
     double vi[M];
     double *alfa;
-    int size;
     double freq;
 
     // По коэффициентам интерполяции вычисляем функцию в точке t (p == 0)
@@ -34,7 +36,7 @@ class data {
     double P(double t, int p)
     {
         int i, j, k;
-        long double res;
+        double res;
 
         if (size < M)
             return 0;
@@ -50,7 +52,7 @@ class data {
         return res;
     }
 
-    // Сворачиваем угол в промежуток (-pi; pi)
+    // Сворачиваем угол в интервал (-pi; pi)
     double pi(double a)
     {
         int c;
@@ -115,7 +117,7 @@ public:
             tmpti[i] = i;
 
         free(alfa);
-        //Расчет коэффициентов представления методом Гаусса
+        //Расчет коэффициентов интерполяции методом Гаусса
         if ((alfa = gauss(M, tmpti, vi)) == NULL){
             fprintf(stderr, "[ERROR GAUSS] Ошибка в определении коэфициентов\n");
             exit(ERR_GAUSS);
@@ -172,6 +174,10 @@ public:
         double v = computedMag();
 
         a = 2*M_PI*f*ti[5]/freq;
+        // Если первая производная < 0, то улол лежит в диапазоне
+        // [-pi, -pi/2) U (pi/2, pi] во второй и третьей четверти
+        // (тк P1 = cos). То сдвигаем угол на pi в первый и третий
+        // квадрант.
         if (P(t, 1) < 0)
             a += M_PI;
 
@@ -196,9 +202,72 @@ int main(int argc, char **argv) {
         double computedMag = dat.computedMag();
         double computedAng = dat.computedAng();
         double computedFreq = dat.computedFreq();
-        printf("samp %.9f, mag %.9f, ang %.9f, freq %.9f\n",
+        printf("samp %.9f mag %.9f ang %.9f freq %.9f\n",
                 samp, computedMag, computedAng, computedFreq);
     }
 
     return 0;
+}
+
+
+// Решение СЛАУ методом Гаусса, определитель 
+// Вандермонда составляем на основании вектора t
+double * gauss(int m, double *t, double *f)
+{
+    int size, i, j, d, J;
+    double max, ma[m][m+1], rotate[m+1], *X;
+
+    // Выделили память под ответ
+    X = (double *) calloc(m, sizeof(double));
+
+    // Формируем матрицу из определителя Вандермонда, и узлов интерполяции
+    for (i = 0; i < m; i++){
+        for (j = 0; j < m; j++){
+            ma[i][j] = pow(t[i], j);
+        }
+        ma[i][m] = f[i];
+    }
+
+    // Прямой ход метода, переводим матрицу к диагональному виду
+    for (i = 0; i < m; i++){
+        max = fabs(ma[i][i]);
+        J = i;
+        for (j = i+1; j < m; j++){
+            if (fabs(ma[j][i]) > max){
+                max = fabs(ma[j][i]);
+                J = j;
+            }
+        }
+
+        if (J != i){
+            memcpy(rotate, &ma[i][i], sizeof(double)*(m+1-i));
+            memcpy(&ma[i][i], &ma[J][i], sizeof(double)*(m+1-i));
+            memcpy(&ma[J][i], rotate, sizeof(double)*(m+1-i));
+        }
+
+        if (ma[i][i] != 0){
+            for (j = m; j >= i; j--)
+                ma[i][j] /= ma[i][i];
+        }else{
+            fprintf(stderr, "Система не совместна\nma[%d]=%.2f ma[%d][%d] = %.2f\n",
+                    i, ma[i][i], i, j, ma[i][j]);
+            return NULL;
+        }
+
+        for (j = i+1; j < m; j++){
+            for (d = m; d >= i; d--){
+                ma[j][d] -= ma[j][i]*ma[i][d];
+            }
+        }
+    }
+
+    // Обратный ход метода
+    for ( i = 0; i < m; i++ )
+        X[i] = ma[i][m];
+
+    for ( i = m - 2; i >= 0; i-- )
+        for ( j = i + 1; j < m; j++ )
+            X[i] -= X[j] * ma[i][j];
+
+    return X;
 }
