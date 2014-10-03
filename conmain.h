@@ -4,4 +4,6 @@
 #include <strings.h>
 #include <string.h>
 
-long double * gauss(int, double *, double *);
+#define ERR_GAUSS 1
+
+double * gauss(int, double *, double *);

@@ -1,10 +1,19 @@
-all: compile run
+CC=g++
+all: vim compile run
 
 compile:
-	g++ gauss.c -c
-	g++ -std=c++11 conmain.cpp -c
-	g++ gauss.o conmain.o -o conmain -lm
-run: compile
+	${CC} gauss.cpp -c
+	${CC} conmain.cpp -c -DDEBUG=0
+	${CC} gauss.o conmain.o -o conmain -lm
+
+run:
 	./conmain
+
 vim:
 	vim conmain.cpp
+
+speed:
+	time ./conmain &>/dev/null
+
+clean:
+	rm *.o conmain

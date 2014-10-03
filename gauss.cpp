@@ -1,34 +1,34 @@
 #include "conmain.h"
 
 
-long double * gauss(int M, double *t, double *f)
+double * gauss(int M, double *t, double *f)
 {
     int size, i, j, v, k, d, p, J;
-    long double max, ma[M][M+1], rotate[M+1], *X;
+    double max, ma[M][M+1], rotate[M+1], *X;
 
-    X = (long double *) malloc(M*sizeof(long double));
+    X = (double *) malloc(M*sizeof(double));
 
     for (i = 0; i < M; i++){
         for (j = 0; j < M; j++){
-            ma[i][j] = powl((long double) t[i], j);
+            ma[i][j] = pow(t[i], j);
         }
-        ma[i][M] = (long double) f[i];
+        ma[i][M] = f[i];
     }
 
     for (i = 0; i < M; i++){
-        max = fabsl(ma[i][i]);
+        max = fabs(ma[i][i]);
         J = i;
         for (j = i+1; j < M; j++){
-            if (fabsl(ma[j][i]) > max){
-                max = fabsl(ma[j][i]);
+            if (fabs(ma[j][i]) > max){
+                max = fabs(ma[j][i]);
                 J = j;
             }
         }
 
         if (J != i){
-            memcpy(rotate, &ma[i][i], sizeof(long double)*(M+1-i));
-            memcpy(&ma[i][i], &ma[J][i], sizeof(long double)*(M+1-i));
-            memcpy(&ma[J][i], rotate, sizeof(long double)*(M+1-i));
+            memcpy(rotate, &ma[i][i], sizeof(double)*(M+1-i));
+            memcpy(&ma[i][i], &ma[J][i], sizeof(double)*(M+1-i));
+            memcpy(&ma[J][i], rotate, sizeof(double)*(M+1-i));
         }
 
         if (ma[i][i] != 0){
