@@ -1,8 +1,4 @@
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <strings.h>
+#include "conmain.h"
 
 #define M 11
  
@@ -25,230 +21,18 @@ public:
 class data {
     double ti[M] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     double vi[M] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    long double *alfa;
     int size = 0;
     double freq;
-
-    double Mul(double t, double *tj, int *ex)
-    {
-        int j;
-        int cont;
-        double mul = 1;
-    
-        for (j = 0; j < size; j++){
-            if (ex[j])
-                continue;
-            mul *= (t-tj[j]);
-        }
-        return mul;
-    }
-    
-    // Вычисляет значение функции по точкам
-    double P(double t)
-    {
-        int i;
-        double res;
-        int *ex;
-        
-        ex = (int *) malloc(size*sizeof(int));
-        bzero(ex, size*sizeof(int));
-    
-        res = 0;
-    
-        for (i = 0; i < size; i++){
-            bzero(ex, size*sizeof(int));
-            ex[i] = 1;
-            res += vi[i] * (Mul(t, ti, ex) / Mul(ti[i], ti, ex));
-        }
-    
-        free(ex);
-        return res;
-    }
-    
-    // Вычисляет значение первой производной функции по точкам
-    double P1(double t)
-    {
-        int i, k;
-        double res, res2;
-        int *ex;
-        
-        ex = (int *) malloc(size*sizeof(int));
-        bzero(ex, size*sizeof(int));
-    
-        res = 0;
-        res2 = 0;
-    
-        for (i = 0; i < size; i++){
-            ex[i] = 1;
-            res2 = 0;
-            for (k = 0; k < size; k++){
-                if (k == i)
-                    continue;
-                ex[k] = 1;
-                res2 += Mul(t, ti, ex);
-                ex[k] = 0;
-            }
-            res += vi[i] * (res2 / Mul(ti[i], ti, ex));
-            ex[i] = 0;
-        }
-    
-        free(ex);
-        return res;
-    }
-    
-    // Вычисляет значение второй производной функции по точкам
-    double P2(double t)
-    {
-        int i, k, p;
-        double res, res2, res3;
-        int *ex;
-        
-        ex = (int *) malloc(size*sizeof(int));
-        bzero(ex, size*sizeof(int));
-    
-        res = 0;
-        res2 = 0;
-        res3 = 0;
-    
-        for (i = 0; i < size; i++){
-            ex[i] = 1;
-            res2 = 0;
-            for (k = 0; k < size; k++){
-                if (k == i)
-                    continue;
-                ex[k] = 1;
-                res3 = 0;
-                for (p = 0; p < size; p++){
-                    if (p == i || p == k)
-                        continue;
-                    ex[p] = 1;
-                    res3 += Mul(t, ti, ex);
-                    ex[p] = 0;
-                }
-                res2 += res3;
-                ex[k] = 0;
-            }
-            res += vi[i] * (res2 / Mul(ti[i], ti, ex));
-            ex[i] = 0;
-        }
-    
-        free(ex);
-        return res;
-    }
-    
-    // Вычисляет значение третьей производной функции по точкам
-    double P3(double t)
-    {
-        int i, k, p, l;
-        double res, res2, res3, res4;
-        int *ex;
-        
-        ex = (int *) malloc(size*sizeof(int));
-        bzero(ex, size*sizeof(int));
-    
-        res = 0;
-        res2 = 0;
-        res3 = 0;
-        res4 = 0;
-    
-        for (i = 0; i < size; i++){
-            ex[i] = 1;
-            res2 = 0;
-            for (k = 0; k < size; k++){
-                if (k == i)
-                    continue;
-                ex[k] = 1;
-                res3 = 0;
-                for (p = 0; p < size; p++){
-                    if (p == i || p == k)
-                        continue;
-                    ex[p] = 1;
-                    res4 = 0;
-                    for (l = 0; l < size; l++){
-                        if (l == i || l == k || l == p)
-                            continue;
-                        ex[l] = 1;
-                        res4 += Mul(t, ti, ex);
-                        ex[l] = 0;
-                    }
-                    res3 += res4;
-                    ex[p] = 0;
-                }
-                res2 += res3;
-                ex[k] = 0;
-            }
-            res += vi[i] * (res2 / Mul(ti[i], ti, ex));
-            ex[i] = 0;
-        }
-    
-        free(ex);
-        return res;
-    }
-    
-    // Вычисляет значение четвертой производной функции по точкам
-    double P4(double t)
-    {
-        int i, k, p, l, m;
-        double res, res2, res3, res4, res5;
-        int *ex;
-        
-        ex = (int *) malloc(size*sizeof(int));
-        bzero(ex, size*sizeof(int));
-    
-        res = 0;
-        res2 = 0;
-        res3 = 0;
-        res4 = 0;
-        res5 = 0;
-    
-        for (i = 0; i < size; i++){
-            ex[i] = 1;
-            res2 = 0;
-            for (k = 0; k < size; k++){
-                if (k == i)
-                    continue;
-                ex[k] = 1;
-                res3 = 0;
-                for (p = 0; p < size; p++){
-                    if (p == i || p == k)
-                        continue;
-                    ex[p] = 1;
-                    res4 = 0;
-                    for (l = 0; l < size; l++){
-                        if (l == i || l == k || l == p)
-                            continue;
-                        ex[l] = 1;
-                        res5 = 0;
-                        for (m = 0; m < size; m++){
-                            if (m == i || m == k || m == p || m == l)
-                                continue;
-                            ex[m] = 1;
-                            res5 += Mul(t, ti, ex);
-                            ex[m] = 0;
-                        }
-                        res4 += res5;
-                        ex[l] = 0;
-                    }
-                    res3 += res4;
-                    ex[p] = 0;
-                }
-                res2 += res3;
-                ex[k] = 0;
-            }
-            res += vi[i] * (res2 / Mul(ti[i], ti, ex));
-            ex[i] = 0;
-        }
-    
-        free(ex);
-        return res;
-    }
 
 public:
     data(double samplingFrequency)
     {
         freq = 1/samplingFrequency;
+        alfa = (long double *) malloc(M*sizeof(long double));
     }
 
-    //Добавляем новый элемент в массив данных
+    //Добавляем новый элемент в массивы данных
     void add(double v)
     {
         if (size < M){
@@ -262,7 +46,44 @@ public:
             }
             vi[M-1] = v;
             ti[M-1] += freq;
+            free(alfa);
+            //Расчет коэффициентов представления методом Гаусса
+            if ((alfa = gauss(M, ti, vi)) == NULL){
+                fprintf(stderr, "[ERROR GAUSS] Ошибка в определении коэфициентов\n")
+                exit(10);
+            }
         }
+    }
+
+    long double P(double t, int p)
+    {
+        int i, j, k;
+        long double res;
+
+        if (size < M)
+            return 0;
+
+        res = 0;
+        for (i = p; i < M; i++){
+            k = 1;
+            for (j = 0; j < p; j++)
+                k *= (i-j);
+            res += k*alfa[i]*powl(t, i-p);
+        }
+
+        return res;
+    }
+
+    double pi(double a)
+    {
+        int c;
+
+        c = a/2/M_PI;
+        a -= 2*M_PI*c;
+        if (a <= M_PI)
+            return a;
+        else
+            return a-2*M_PI;
     }
 
     //Вычисляем амплитуду
@@ -272,8 +93,8 @@ public:
             return 0;
 
         double t = ti[size/2];
-        double f = 1/2.0/M_PI*sqrt(-P2(t)/P(t));
-        return sqrt((pow(2*M_PI*f*P3(t), 2) + pow(P4(t), 2))/pow(2*M_PI*f, 8));
+        double f = 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0));
+        return sqrt((pow(2*M_PI*f*P(t, 3), 2) + pow(P(t, 4), 2))/pow(2*M_PI*f, 8));
     }
 
     //Вычисляем частоту
@@ -283,7 +104,7 @@ public:
             return 0;
 
         double t = ti[size/2];
-        return 1/2.0/M_PI*sqrt(-P2(t)/P(t));
+        return 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0));
     }
 
     //Вычисляем фазу
@@ -292,21 +113,23 @@ public:
         if (size < M)
             return 0;
 
-        static double pi;
-        static int tmp;
+        double a;
         double t = ti[size/2];
-        double f = 1/2.0/M_PI*sqrt(-P2(t)/P(t));
-        double v = sqrt((pow(2*M_PI*f*P3(t), 2) + pow(P4(t), 2))/pow(2*M_PI*f, 8));
+        double f = 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0));
+        double v = sqrt((pow(2*M_PI*f*P(t, 3), 2) + pow(P(t, 4), 2))/pow(2*M_PI*f, 8));
 
-        if (P2(t) < 0){
-            tmp = 0;
-            return pi + acos(P1(t)/v/2/M_PI/f) - 2*M_PI*f*t;
-        }else{
-            if (!tmp)
-                pi += 2*M_PI;
-            tmp = 1;
-            return pi - acos(P1(t)/v/2/M_PI/f) - 2*M_PI*f*t;
-        }
+        a = pi(2*M_PI*f*t);
+
+        return atan(-P(t, 4)/P(t, 3)/2/M_PI/f) - a;
+    }
+
+    double computedP()
+    {
+        if (size < M)
+             return 0;
+
+        double t = ti[size/2];
+        return P(t, 0);
     }
 };
 
