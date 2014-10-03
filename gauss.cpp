@@ -6,8 +6,10 @@ double * gauss(int M, double *t, double *f)
     int size, i, j, v, k, d, p, J;
     double max, ma[M][M+1], rotate[M+1], *X;
 
+    // Выделили память, не забуть ее очистить перед повторным вызовом
     X = (double *) calloc(M, sizeof(double));
 
+    // Формируем матрицу их определителя Вандермонда, и узлов интерполяции
     for (i = 0; i < M; i++){
         for (j = 0; j < M; j++){
             ma[i][j] = pow(t[i], j);
@@ -15,6 +17,7 @@ double * gauss(int M, double *t, double *f)
         ma[i][M] = f[i];
     }
 
+    // Прямой ход метода
     for (i = 0; i < M; i++){
         max = fabs(ma[i][i]);
         J = i;
@@ -47,6 +50,7 @@ double * gauss(int M, double *t, double *f)
         }
     }
 
+    // Обратный ход метода
     for ( i = 0; i < M; i++ )
         X[i] = ma[i][M];
 

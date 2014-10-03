@@ -72,6 +72,7 @@ class data {
     }
 
 public:
+    // Конструктор, внес сюда всю инициализацию
     data(double samplingFrequency)
     {
         int i;
@@ -106,6 +107,10 @@ public:
             ti[M-1] += freq;
         }
 
+        // Ход конем, для более точной интерполяции по оси OX берем не реальный
+        // промежуток времени, а точки 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.
+        // Далее все велечины (частота, амплитуда, фаза) перещитываем исходя из
+        // сделанных тут допущений.
         for (i = 0; i < M; i++)
             tmpti[i] = i;
 
@@ -141,7 +146,7 @@ public:
             return 0;
 
         double t = 5;
-        double f = freq*computedFreq();
+        double f = freq*computedFreq(); // Не забываем про нашего коня
         return sqrt((pow(2*M_PI*f*P(t, 3), 2) + pow(P(t, 4), 2))/pow(2*M_PI*f, 8));
     }
 
@@ -152,7 +157,7 @@ public:
             return 0;
 
         double t = 5;
-        return 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0))/freq;
+        return 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0))/freq; // Не забываем про нашего коня
     }
 
     //Вычисляем фазу
@@ -163,7 +168,7 @@ public:
 
         double a;
         double t = 5;
-        double f = freq*computedFreq();
+        double f = freq*computedFreq(); // Не забываем про нашего коня
         double v = computedMag();
 
         a = 2*M_PI*f*ti[5]/freq;
