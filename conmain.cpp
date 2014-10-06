@@ -1,10 +1,19 @@
-#include "conmain.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+#include <string.h>
+
+#define ERR_GAUSS 1
 
 #define M 11
 
 #ifndef DEBUG
     #define DEBUG 0
 #endif
+
+
+double * gauss(int, double *, double *);
 
 
 class model {
@@ -19,7 +28,9 @@ public:
     {}
     double next() {
         ang += step;
-        return mag*sin(ang);
+        // Добавил 0.2% третьей гармоники
+        return mag*sin(ang) + 0.2/100.0 * mag*sin(3*ang);
+        //return mag*sin(ang);
     }
 };
 
@@ -148,7 +159,7 @@ public:
             return 0;
 
         double t = 5;
-        double f = freq*computedFreq(); // Не забываем про нашего коня
+        double f = freq*computedFreq();
         return sqrt((pow(2*M_PI*f*P(t, 3), 2) + pow(P(t, 4), 2))/pow(2*M_PI*f, 8));
     }
 
@@ -159,7 +170,7 @@ public:
             return 0;
 
         double t = 5;
-        return 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0))/freq; // Не забываем про нашего коня
+        return 1/2.0/M_PI*sqrt(-P(t, 2)/P(t, 0))/freq;
     }
 
     //Вычисляем фазу
@@ -170,14 +181,10 @@ public:
 
         double a;
         double t = 5;
-        double f = freq*computedFreq(); // Не забываем про нашего коня
+        double f = freq*computedFreq();
         double v = computedMag();
 
         a = 2*M_PI*f*ti[5]/freq;
-        // Если первая производная < 0, то улол лежит в диапазоне
-        // [-pi, -pi/2) U (pi/2, pi] во второй и третьей четверти
-        // (тк P1 = cos). То сдвигаем угол на pi в первый и третий
-        // квадрант.
         if (P(t, 1) < 0)
             a += M_PI;
 
@@ -190,7 +197,7 @@ int main(int argc, char **argv) {
     int i;
     const double samplingFrequency = 4000.0;
     const double modelMag = 380;
-    const double modelAng = 0.25 * M_PI;
+    const double modelAng = (argc > 1) ? atof(argv[1]) : 0.25*M_PI;
     const double modelFreq = 50.123456789;
  
     model mdl(modelMag, modelAng, modelFreq, samplingFrequency);

@@ -2,9 +2,7 @@ CC=g++
 all: vim compile run
 
 compile:
-	${CC} gauss.cpp -c
-	${CC} conmain.cpp -c -DDEBUG=0
-	${CC} gauss.o conmain.o -o conmain -lm
+	${CC} conmain.cpp -o conmain -lm -DDEBUG=0
 
 run:
 	./conmain
